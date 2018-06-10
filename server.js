@@ -1,13 +1,29 @@
-var http = require('http');
+/*
+*  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+*  See LICENSE in the source repository root for complete license information.
+*/
 
-var server = http.createServer(function(request, response) {
+var express = require('express');
+var app = express();
+var morgan = require('morgan');
+var path = require('path');
 
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    response.end("Hello World!");
+// Initialize variables.
+var port = process.env.PORT || 8080;
 
+// Configure morgan module to log all requests.
+app.use(morgan('dev'));
+
+// Set the front-end folder to serve public assets.
+console.log(path.join(__dirname, '../../out'));
+app.use("/out", express.static(path.join(__dirname, "../../out")));
+app.use("/bower_components", express.static(path.join(__dirname, 'bower_components')));
+
+// Set up our one route to the index.html file.
+app.get('*', function (req, res) {
+    res.sendFile(path.join(__dirname + '/index.html'));
 });
 
-var port = process.env.PORT || 80;
-server.listen(port);
-
-console.log("Server running at http://localhost:%d", port);
+// Start the server.
+app.listen(port);
+console.log('Listening on port ' + port + '...'); 
